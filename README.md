@@ -1,35 +1,23 @@
 # Premier League Match-Outcome Prediction
 
-**Murtadaa Aliu · Junior Seminar · Weeks 1–7 scope**
+Machine-learning experiments for football forecasting, with a React interface under development.
 
-A machine-learning research project investigating reliable Premier League match-outcome prediction. This repository brings together the cumulative midterm evidence, reproducible experiments, and an early React team-selection prototype.
+The project explores how historical match data and recent team form can support Premier League predictions. The research goal is to estimate home-win, draw, and away-win probabilities and assess how reliable those probabilities are—not just whether the predicted winner is correct.
 
-## Progress through the first seven weeks
+## Current development
 
-| Period | Research progression | Supporting material |
-|---|---|---|
-| Week 1 | Defined the forecasting problem and three-class research objective | Assignment 1 and proposal framing |
-| Week 2 | Planned chronological evaluation, leakage controls, calibration, and model comparisons | Approved project proposal |
-| Weeks 3–4 | Prepared match data, implemented a binary baseline, and calculated rolling form | Original CSV, scraper, and recorded notebook evidence |
-| Weeks 5–6 | Reported exploratory comparisons across three model families and refined the research direction | Submitted progress report and comparison chart |
-| Week 7 | Began the transition from research workflow to team-selection interface design | Combined Weeks 7–8 design evidence; exact completion boundary is qualified |
+The experimental pipeline currently predicts **a team's win versus non-win**. It includes chronological evaluation and previous-match rolling features. The next research stage is fixture-level three-class modeling, followed by calibration, controlled feature comparisons, and interpretation. The React prototype supports fixture selection; a prediction service has not yet been connected.
 
-The [cumulative progress record](docs/PROGRESS.md) connects each stage to its evidence and distinguishes completed research from remaining milestones.
-
-## Research goal and midpoint status
-
-The final research goal is calibrated **home-win / draw / away-win** probabilities using pre-match features, chronological evaluation, model comparison, ablations, and interpretability. The midpoint experiments instead predict **a team's win versus non-win**. They are exploratory baselines, not the finished three-class system.
-
-| Component | Midterm status |
+| Component | Status |
 |---|---|
 | Frozen historical CSV and original scraping notebook | Included, with provenance and coverage audit |
 | Binary Random Forest baseline and lagged form experiment | Reconstructed from recorded notebook evidence; reproducible |
 | Rolling feature checks and chronological split details | Reproducibility verification included |
 | Logistic Regression / Random Forest / Gradient Boosting | Reported comparison plus a separately labeled supplemental experiment |
-| Team-selection interface | Early prototype; no prediction API or invented probabilities |
+| Team-selection interface | Input validation and request preview; prediction API pending |
 | Three-class fixture model, calibration, final test, interpretability | Planned / incomplete |
 
-## Evidence and results
+## Experimental results
 
 The archived recording shows a 1,107-row training set and 276-row test set, using a strict January 1, 2022 boundary. Six boundary-day rows are excluded. Its Random Forest baseline reports **61.23% accuracy** and **47.46% win precision**. The always-non-win baseline achieves **62.32% accuracy**, so the metadata-only model does not beat that baseline. Adding eight lagged form features raises recorded **win precision to 62.50%**—this is precision, not accuracy.
 
@@ -43,7 +31,7 @@ The rolling audit checks **10,560 values**, producing **1,317 complete-history r
 
 ![Recorded rolling-model precision](evidence/recorded_rolling_precision.png)
 
-See [evidence provenance](evidence/README.md), [data coverage](docs/DATA.md), [week-by-week progress](docs/PROGRESS.md), [methodology and limitations](docs/METHODOLOGY.md), and [second-half roadmap](docs/ROADMAP.md).
+Further documentation covers [data coverage](docs/DATA.md), [methods and limitations](docs/METHODOLOGY.md), [development progress](docs/PROGRESS.md), [planned milestones](docs/ROADMAP.md), and [evidence provenance](evidence/README.md).
 
 ## Reproduce the research
 
@@ -80,7 +68,7 @@ npm ci
 npm run dev
 ```
 
-Select two different teams, a date, and a kickoff time. The interface previews a request, but deliberately provides no forecast because the prediction service is not included at this midpoint. `npm run build` verifies the production build.
+Select two different teams, a date, and a kickoff time. The interface previews a request; forecasts will be added after the prediction service is implemented and evaluated. `npm run build` verifies the production build.
 
 ## Repository map
 
