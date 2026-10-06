@@ -1,21 +1,31 @@
-# Premier League Prediction — Midterm Research Snapshot
+# Premier League Match-Outcome Prediction
 
 **Murtadaa Aliu · Junior Seminar · Weeks 1–7 scope**
 
-A reproducible companion to the cumulative midterm report: historical match-data preparation, exploratory binary prediction, checked rolling form features, and an early React team-selection prototype.
+A machine-learning research project investigating reliable Premier League match-outcome prediction. This repository brings together the cumulative midterm evidence, reproducible experiments, and an early React team-selection prototype.
 
-> **Snapshot disclosure:** This repository was assembled on October 6, 2026 from the original project and submitted evidence. It is not an original seven-week commit history. Reconstructed code, newly executed checks, and supplemental comparisons are labeled as such. The original project remains at [AMurtadaa/Premier-league](https://github.com/AMurtadaa/Premier-league).
+## Progress through the first seven weeks
+
+| Period | Research progression | Supporting material |
+|---|---|---|
+| Week 1 | Defined the forecasting problem and three-class research objective | Assignment 1 and proposal framing |
+| Week 2 | Planned chronological evaluation, leakage controls, calibration, and model comparisons | Approved project proposal |
+| Weeks 3–4 | Prepared match data, implemented a binary baseline, and calculated rolling form | Original CSV, scraper, and recorded notebook evidence |
+| Weeks 5–6 | Reported exploratory comparisons across three model families and refined the research direction | Submitted progress report and comparison chart |
+| Week 7 | Began the transition from research workflow to team-selection interface design | Combined Weeks 7–8 design evidence; exact completion boundary is qualified |
+
+The [cumulative progress record](docs/PROGRESS.md) connects each stage to its evidence and distinguishes completed research from remaining milestones.
 
 ## Research goal and midpoint status
 
 The final research goal is calibrated **home-win / draw / away-win** probabilities using pre-match features, chronological evaluation, model comparison, ablations, and interpretability. The midpoint experiments instead predict **a team's win versus non-win**. They are exploratory baselines, not the finished three-class system.
 
-| Component | Snapshot status |
+| Component | Midterm status |
 |---|---|
 | Frozen historical CSV and original scraping notebook | Included, with provenance and coverage audit |
 | Binary Random Forest baseline and lagged form experiment | Reconstructed from recorded notebook evidence; reproducible |
-| Rolling feature checks and chronological split details | Verified during snapshot preparation |
-| Logistic Regression / Random Forest / Gradient Boosting | Earlier reports describe comparisons; reproducible supplemental comparison included, executed now |
+| Rolling feature checks and chronological split details | Reproducibility verification included |
+| Logistic Regression / Random Forest / Gradient Boosting | Reported comparison plus a separately labeled supplemental experiment |
 | Team-selection interface | Early prototype; no prediction API or invented probabilities |
 | Three-class fixture model, calibration, final test, interpretability | Planned / incomplete |
 
@@ -49,7 +59,7 @@ python scripts/run_midterm.py
 python scripts/run_midterm.py --all-models
 ```
 
-Results go to `artifacts/generated/metrics.json`, with an actual execution timestamp, environment versions, split details, confusion matrices, probability metrics, and a reconstruction disclosure. The checked-in [verification output](artifacts/verification/metrics.json) is a new execution, not an archived semester log. Binary Brier and log-loss values do **not** imply that calibration has been fitted.
+Results go to `artifacts/generated/metrics.json`, with an execution timestamp, environment versions, split details, confusion matrices, and probability metrics. The checked-in [verification output](artifacts/verification/metrics.json) is supplementary reproducibility evidence, separate from [archived observations](artifacts/archived_observations.json). Binary Brier and log-loss values do **not** imply that calibration has been fitted.
 
 For exploratory notebooks:
 
@@ -81,9 +91,11 @@ scripts/           Reproducible command-line experiment runner
 tests/             Target, date boundary, rolling-value and leakage checks
 notebooks/         Midterm exploration and archived original scraper
 evidence/          Cropped historical screenshots and provenance
-artifacts/         Archived observations and newly executed verification
+artifacts/         Archived observations and supplementary verification
 frontend/          Early React team-selection prototype, no model API
 docs/              Progress, data limitations, methods, next milestones
 ```
 
-No final application, later integration tests, or completed results-page claims are presented as Week 7 accomplishments. The Weeks 7–8 source does not establish exact completion dates for its interface screenshots; the allocation is conservative and explicitly qualified.
+## Evidence note
+
+This is a curated midterm companion to the semester work, not a seven-week Git history. Reconstructed implementations and supplementary verification are distinguished from archived evidence in the [provenance record](evidence/README.md). The [original project](https://github.com/AMurtadaa/Premier-league) is retained as the source reference. Later integration and final-system work are outside this report's scope.

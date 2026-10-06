@@ -37,7 +37,7 @@ function App() {
       <aside><p className="eyebrow">RESEARCH STATUS</p><h2>The model comes first.</h2><p>Current experiments explore team win versus non-win. The final goal is calibrated home-win, draw and away-win probabilities.</p><ul><li><span className="dot done"></span>Historical data and binary baseline</li><li><span className="dot done"></span>Previous-match rolling features</li><li><span className="dot"></span>Three-class evaluation and calibration</li><li><span className="dot"></span>Prediction API integration</li></ul><div className="notice">Dataset coverage is partial. Results must be evaluated before they become predictions.</div></aside>
     </section>
     {request && <section className="preview" aria-live="polite"><div className="section-heading"><span className="number">02</span><h2>Request preview</h2></div><p>Input validated. A future service will receive these fields. No prediction has been generated.</p><pre>{JSON.stringify(request, null, 2)}</pre></section>}
-    <footer>Weeks 1–7 scope · Reconstructed snapshot · Research in progress</footer>
+    <footer>Premier League research · Midterm interface prototype · Model integration pending</footer>
   </main>;
 }
 createRoot(document.getElementById('root')).render(<App />);

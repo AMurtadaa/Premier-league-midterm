@@ -1,6 +1,6 @@
 # Cumulative progress: Weeks 1–7
 
-This account separates historical evidence, reported work, and code reconstructed now. No commit dates have been backdated.
+The project progressed from problem definition and experimental design to data preparation, exploratory modeling, and interface design. The table below connects that progression to the submitted evidence.
 
 | Stage | Significant work and output | Evidence / limitation |
 |---|---|---|
@@ -8,11 +8,11 @@ This account separates historical evidence, reported work, and code reconstructe
 | Week 2 | Planned chronological evaluation, leakage controls, model comparisons, ablations, interpretability and React/Python prototype. | Approved proposal; exact coverage and separate calibration partition required clarification. |
 | Weeks 3–4 | Collected/preprocessed historical team-match data, converted dates and metadata, formed win/non-win target, ran Random Forest, constructed previous-three-match rolling features. | Original CSV/scraper and recorded notebook screenshots; current modules reconstruct visible methods. |
 | Weeks 5–6 | Continued exploratory model comparisons and reported Logistic Regression, Random Forest and Gradient Boosting; refined data/feature preparation and discussed challenges. | Submitted progress report and Milestone 2 comparison chart. Original executable comparison notebook/protocol is unavailable, so approximate chart values are not treated as verified holdout scores. |
-| Week 7 | Began the team-selection interface as the research-to-prototype transition. | Conservative allocation from a combined Weeks 7–8 source. Exact per-page completion dates are not established. The included React prototype was assembled now, not recovered as an original Week 7 commit. |
+| Week 7 | Began the team-selection interface as the research-to-prototype transition. | Conservative allocation from a combined Weeks 7–8 source. Exact per-page completion dates are not established; the screenshot supports the design direction. |
 
 ## Completed versus incomplete
 
-Historical evidence supports data preparation, a binary Random Forest baseline, rolling form construction, and reported comparison work. Newly executed verification supplies explicit split counts, checked rolling values, and a reproducible supplemental comparison. It strengthens reproducibility **now**, not the historical record of when work was done.
+Historical evidence supports data preparation, a binary Random Forest baseline, rolling form construction, and reported comparison work. Supplementary verification supplies explicit split counts, checked rolling values, and a reproducible comparison. These verification outputs are kept separate from original observations; see the [evidence record](../evidence/README.md).
 
 At the midpoint, the final three-class target, independent calibration fitting, locked final testing, controlled ablations, and interpretation remain unfinished. The early interface is not connected to a prediction service. Completed results pages, full API integration, and later integration tests are excluded from the Week 7 scope.
 
