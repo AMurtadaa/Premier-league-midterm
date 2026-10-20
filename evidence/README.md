@@ -1,5 +1,9 @@
 # Evidence provenance
 
+## Restored frontend
+
+`frontend_selection.png` and `frontend_results.png` are current screenshots of the restored source components documented in `docs/FRONTEND.md`. They demonstrate the reused UI, not a historical completion date or a live prediction API. Fixed 60/40 sample values are clearly labeled on the results page.
+
 This repository was assembled on October 6, 2026 as a companion to the cumulative midterm report. The CSV, original scraper, and recorded screenshots come from the source project and supplied submissions. Research modules, companion notebooks, tests, and the early React prototype are reconstructed implementations; verification metrics and supplemental model comparisons are separate executions, not original weekly logs. Repository creation and commit dates do not establish semester-week completion dates.
 
 | File | Origin | What it supports |

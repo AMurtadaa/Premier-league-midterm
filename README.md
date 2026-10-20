@@ -6,7 +6,7 @@ The project explores how historical match data and recent team form can support 
 
 ## Current development
 
-The experimental pipeline currently predicts **a team's win versus non-win**. It includes chronological evaluation and previous-match rolling features. The next research stage is fixture-level three-class modeling, followed by calibration, controlled feature comparisons, and interpretation. The React prototype supports fixture selection; a prediction service has not yet been connected.
+The experimental pipeline currently predicts **a team's win versus non-win**. It includes chronological evaluation and previous-match rolling features. The next research stage is fixture-level three-class modeling, followed by calibration, controlled feature comparisons, and interpretation. The React frontend reuses the original club-selection and results components; a prediction service has not yet been connected.
 
 | Component | Status |
 |---|---|
@@ -14,7 +14,7 @@ The experimental pipeline currently predicts **a team's win versus non-win**. It
 | Binary Random Forest baseline and lagged form experiment | Reconstructed from recorded notebook evidence; reproducible |
 | Rolling feature checks and chronological split details | Reproducibility verification included |
 | Logistic Regression / Random Forest / Gradient Boosting | Reported comparison plus a separately labeled supplemental experiment |
-| Team-selection interface | Input validation and request preview; prediction API pending |
+| React interface | Original club selectors, crests, match controls, results layout, and return navigation; sample output clearly labeled |
 | Three-class fixture model, calibration, final test, interpretability | Planned / incomplete |
 
 ## Experimental results
@@ -68,7 +68,7 @@ npm ci
 npm run dev
 ```
 
-Select two different teams, a date, and a kickoff time. The interface previews a request; forecasts will be added after the prediction service is implemented and evaluated. `npm run build` verifies the production build.
+Select two different teams, a kickoff time and weekday, then choose **Preview results**. The results page shows club crests, match details, a two-way layout example, and expandable request fields. Its fixed 60/40 sample is not model output. **Change fixture** returns to the form with inputs retained. Real forecasts will be added after the prediction service is implemented and evaluated. Run `npm test` for input checks and `npm run build` for the production build. See [frontend implementation and source attribution](docs/FRONTEND.md).
 
 ## Repository map
 
