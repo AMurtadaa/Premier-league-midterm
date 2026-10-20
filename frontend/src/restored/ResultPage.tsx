@@ -40,7 +40,6 @@ const ResultPage: React.FC<ResultPageProps> = ({
       </div>
       <div className='flex flex-col items-center w-full px-6 max-sm:px-4'>
         <h2 className="text-purple-950 font-bold p-4 text-xl">Results preview</h2>
-        <div className="demo-notice" role="status"><strong>Sample display only - not a model prediction.</strong> The 60% / 40% values are fixed layout examples. This original two-way visualization does not represent a home/draw/away probability model.</div>
 
         {/* Home and Away Teams Wrapper */}
         <div className='result-grid fixture-card'>
@@ -54,7 +53,7 @@ const ResultPage: React.FC<ResultPageProps> = ({
 
           {/* Percentage Slider */}
           <div className="w-full flex flex-col items-center">
-            <p className="text-xs font-bold text-purple-800 mb-4">ILLUSTRATIVE TWO-WAY DISPLAY</p>
+            <span className="text-xs text-purple-800 bg-purple-50 rounded-full px-3 py-1 mb-3">Demo data</span>
             <div className="w-full flex bg-gray-400 rounded-full h-3 overflow-hidden relative" aria-label="Sample values: home 60 percent, away 40 percent">
               <div
                 className="bg-red-500 h-full"
@@ -68,12 +67,6 @@ const ResultPage: React.FC<ResultPageProps> = ({
             <div className="flex justify-between mt-2 w-full">
               <span className="text-purple-950 font-bold">{homeWinPercentage}%</span>
               <span className="text-purple-950 font-bold">{awayWinPercentage}%</span>
-            </div>
-            <div className="text-center text-purple-950 font-bold mt-2">
-              Sample layout - forecast unavailable
-            </div>
-            <div className="text-center text-purple-950">
-              Draw probability and model output will be added after research validation and API integration.
             </div>
           </div>
 
