@@ -51,9 +51,6 @@ export default function ResultPage({ prediction, onBack, homeTeam, awayTeam, hom
           </div>
         </div>
         <p className="my-4 text-center">{prediction.match_date} · {prediction.kickoff_time} · {prediction.model}</p>
-        <p className="mb-5 text-sm text-gray-600 text-center">
-          Uncalibrated model estimates. {prediction.last_result ? `Results feed through ${prediction.last_result}.` : 'Bundled historical dataset.'}
-        </p>
         <button onClick={onBack} className="bg-purple-700 hover:bg-purple-900 text-white font-bold py-3 px-6 rounded">Change fixture</button>
       </section>
     </main>

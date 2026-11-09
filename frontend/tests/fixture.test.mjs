@@ -1,6 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { DAYS, validateFixture, makeFixtureRequest } from '../src/fixture.mjs';
+import { DAYS, KICKOFF_TIMES, validateFixture, makeFixtureRequest } from '../src/fixture.mjs';
+
+test('kickoff dropdown offers a full day of valid quarter-hour times', () => {
+  assert.equal(new Set(KICKOFF_TIMES).size, 96);
+  assert.equal(KICKOFF_TIMES[0], '00:00');
+  assert.equal(KICKOFF_TIMES.at(-1), '23:45');
+  assert.ok(KICKOFF_TIMES.includes('16:30'));
+  assert.ok(KICKOFF_TIMES.every(time => validateFixture('Arsenal', 'Chelsea', time, 'Monday') === ''));
+});
 
 test('requires both teams', () => assert.match(validateFixture('', 'Chelsea', '14:00', 'Monday'), /both teams/));
 test('rejects identical teams', () => assert.match(validateFixture('Arsenal', 'Arsenal', '14:00', 'Monday'), /different teams/));

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ResultPage, { type Prediction } from './ResultPage';
-import { validateFixture } from '../fixture.mjs';
+import { KICKOFF_TIMES, validateFixture } from '../fixture.mjs';
 
 interface Team {
   name: string;
@@ -91,7 +91,7 @@ const Page: React.FC = () => {
     setAwayTeam(selectedTeam || null);
   };
 
-  const handleMatchTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMatchTimeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setMatchTime(event.target.value);
   };
 
@@ -172,36 +172,22 @@ const Page: React.FC = () => {
   }
 
   const PredictorFormMain = () => {
-    // Generate times from 11:30 to 23:30 in 30-minute intervals
-    const matchTimes = Array.from({ length: 25 }, (_, i) => {
-      const totalMinutes = 11.5 * 60 + i * 30;
-      const hours = Math.floor(totalMinutes / 60);
-      const minutes = Math.floor(totalMinutes % 60);
-      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-    });
-
     return (
       <div className="flex flex-col items-center gap-2">
-        <h3 className="text-purple-950 font-bold">Match Time</h3>
+        <label htmlFor="match-time" className="text-purple-950 font-bold">Match Time</label>
         <div className="flex flex-col gap-4 w-full text-center">
-          <input
-            type="text"
-            placeholder="Search or type time"
-            list="matchTimesList"
-            className="w-full border border-gray-400 rounded px-3 py-2 text-black"
+          <select
+            id="match-time"
+            className="w-full border border-gray-400 rounded bg-white px-3 py-2 text-black"
             onChange={handleMatchTimeChange}
             value={matchTime}
-            aria-label="Match time"
             disabled={pending}
-            pattern="([01][0-9]|2[0-3]):[0-5][0-9]"
-            title="Use a valid 24-hour time, such as 14:00"
             required
-          />
-          <datalist id="matchTimesList">
-            {matchTimes.map((time) => (
-              <option key={time} value={time} />
+          >
+            {KICKOFF_TIMES.map((time) => (
+              <option key={time} value={time}>{time}</option>
             ))}
-          </datalist>
+          </select>
           <h3 className="text-purple-950 font-bold">Match Date</h3>
           <input
             type="date"

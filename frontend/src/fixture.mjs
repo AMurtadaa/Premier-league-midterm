@@ -1,4 +1,8 @@
 export const DAYS = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+export const KICKOFF_TIMES = Array.from({ length: 96 }, (_, index) => {
+  const minutes = index * 15;
+  return [Math.floor(minutes / 60), minutes % 60].map(value => String(value).padStart(2, '0')).join(':');
+});
 
 export function validateFixture(homeTeam, awayTeam, matchTime, matchDay) {
   if (!homeTeam || !awayTeam) return 'Please select both teams.';
