@@ -6,6 +6,7 @@ export interface Prediction {
   calibrated: boolean;
   match_date: string;
   kickoff_time: string;
+  last_result?: string;
 }
 
 interface Props {
@@ -34,7 +35,7 @@ export default function ResultPage({ prediction, onBack, homeTeam, awayTeam, hom
         <div className="result-grid fixture-card">
           <div className="flex flex-col items-center gap-4">
             <h3 className="font-bold">{homeTeam}</h3>
-            <img src={homeTeamLogo} alt={homeTeam + ' crest'} className="w-40 h-40 object-contain" />
+            {homeTeamLogo && <img src={homeTeamLogo} alt={homeTeam + ' crest'} className="w-40 h-40 object-contain" />}
           </div>
           <div className="w-full">
             <div className="w-full flex rounded-full h-3 overflow-hidden" aria-hidden="true">
@@ -46,11 +47,13 @@ export default function ResultPage({ prediction, onBack, homeTeam, awayTeam, hom
           </div>
           <div className="flex flex-col items-center gap-4">
             <h3 className="font-bold">{awayTeam}</h3>
-            <img src={awayTeamLogo} alt={awayTeam + ' crest'} className="w-40 h-40 object-contain" />
+            {awayTeamLogo && <img src={awayTeamLogo} alt={awayTeam + ' crest'} className="w-40 h-40 object-contain" />}
           </div>
         </div>
         <p className="my-4 text-center">{prediction.match_date} · {prediction.kickoff_time} · {prediction.model}</p>
-        <p className="mb-5 text-sm text-gray-600">Historical model estimates, not calibrated probabilities or live forecasts.</p>
+        <p className="mb-5 text-sm text-gray-600 text-center">
+          Uncalibrated model estimates. {prediction.last_result ? `Results feed through ${prediction.last_result}.` : 'Bundled historical dataset.'}
+        </p>
         <button onClick={onBack} className="bg-purple-700 hover:bg-purple-900 text-white font-bold py-3 px-6 rounded">Change fixture</button>
       </section>
     </main>

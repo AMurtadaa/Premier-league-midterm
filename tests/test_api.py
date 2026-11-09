@@ -13,7 +13,7 @@ FIXTURE = dict(home_team="Manchester City", away_team="Manchester United",
 class PredictionApiTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.client = create_app().test_client()
+        cls.client = create_app(load_predictor()).test_client()
 
     def test_returns_three_normalized_probabilities(self):
         response = self.client.post("/api/predict", json=FIXTURE)

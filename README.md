@@ -15,7 +15,7 @@ The archived experimental pipeline predicts a team's win versus non-win. A separ
 | Rolling feature checks and chronological split details | Reproducibility verification included |
 | Logistic Regression / Random Forest / Gradient Boosting | Reported comparison plus a separately labeled supplemental experiment |
 | React interface | Calls Flask and displays all three model estimates |
-| Three-class fixture model | Fixed-setting Gradient Boosting; 510 training and 137 chronological holdout fixtures; 50.36% accuracy and 0.397 macro-F1 |
+| Three-class fixture models | Bundled historical baseline plus refreshable, date-aware Gradient Boosting; active holdout metrics are exposed at `/api/status` |
 | Calibration, independent final evaluation, interpretability | Not yet completed |
 
 ## Experimental results
@@ -68,7 +68,7 @@ python -m pip install -r requirements.txt
 python -m src.api
 ```
 
-Flask trains the model from the bundled CSV on startup and listens on port 5000. In a second terminal, start React:
+To enable recent dates, run `python -m src.recent` before starting Flask. It downloads completed Premier League results from [Football-Data.co.uk](https://www.football-data.co.uk/englandm.php) into an ignored local cache. Repeat the command and restart Flask to refresh coverage. If you skip this, Flask uses the original bundled historical dataset. It listens on port 5000. In a second terminal, start React:
 
 Requires Node.js 22.12+:
 
@@ -78,7 +78,7 @@ npm ci
 npm run dev
 ```
 
-Choose **Predict match** for the prefilled Manchester derby, or choose another supported matchup and date from January 2 through April 25, 2022. React sends the teams, date, and kickoff time to `POST /api/predict` through the Vite proxy. The model was trained on home fixtures before January 1, 2022; the API only uses observations strictly before the requested date for rolling form. The three displayed estimates come from Flask, not fixed sample values. Dates outside the historical data window are rejected; this is not a live-season forecast. `GET /api/status` exposes chronological holdout metrics. See [frontend source attribution](docs/FRONTEND.md).
+Choose **Predict match** for the prefilled Manchester derby, or enter another supported matchup. The date picker and club list come from `GET /api/status`. With refreshed data, dates are available up to 21 days beyond the latest completed match in the feed. This is a scenario estimator, not a fixture schedule or a live-data feed. It uses both teams' prior results, and each monthly model snapshot trains only on fixtures before the requested month. Estimates are uncalibrated. `GET /api/status` also exposes separate chronological holdout metrics for the active model. See [frontend source attribution](docs/FRONTEND.md).
 
 ## Repository map
 

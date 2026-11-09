@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ResultPage, { type Prediction } from './ResultPage';
 import { validateFixture } from '../fixture.mjs';
 
@@ -6,6 +6,17 @@ interface Team {
   name: string;
   logo: string;
 }
+
+interface Coverage {
+  min_date: string;
+  max_date: string;
+  last_result: string;
+  source: string;
+  active_since?: string;
+  active_teams?: string[];
+}
+
+const clubName = (name: string) => name === 'Brighton & Hove Albion' ? 'Brighton and Hove Albion' : name;
 
 const teams: Team[] = [
   { name: 'Arsenal', logo: '/logo/english-premier-league-2025-2026.football-logos.cc/1500x1500/arsenal.football-logos.cc.png' },
@@ -39,14 +50,44 @@ const Page: React.FC = () => {
   const [prediction, setPrediction] = useState<Prediction | null>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
+  const [coverage, setCoverage] = useState<Coverage | null>(null);
+  const [coveredClubs, setCoveredClubs] = useState<string[]>([]);
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch('/api/status', { signal: controller.signal })
+      .then(response => {
+        if (!response.ok) throw new Error('Unable to load match data.');
+        return response.json();
+      })
+      .then(status => {
+        setCoverage(status.coverage);
+        setCoveredClubs(status.teams);
+        if (status.coverage.active_since) {
+          const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/London', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+          setMatchDate(today <= status.coverage.max_date ? today : status.coverage.last_result);
+        }
+      })
+      .catch(err => { if (err.name !== 'AbortError') setError('Could not load match data. Check that Flask is running.'); });
+    return () => controller.abort();
+  }, []);
+  const eligible = coverage?.active_since && matchDate >= coverage.active_since
+    ? coverage.active_teams ?? coveredClubs : coveredClubs;
+  const clubOptions = eligible.map(name => teams.find(team => clubName(team.name) === name) ?? { name, logo: '' });
+  const changeDate = (day: string) => {
+    setMatchDate(day);
+    if (coverage?.active_since && day >= coverage.active_since) {
+      if (homeTeam && !coverage.active_teams?.includes(clubName(homeTeam.name))) setHomeTeam(null);
+      if (awayTeam && !coverage.active_teams?.includes(clubName(awayTeam.name))) setAwayTeam(null);
+    }
+  };
 
   const handleHomeTeamChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedTeam = teams.find((team) => team.name === event.target.value);
+    const selectedTeam = clubOptions.find((team) => team.name === event.target.value);
     setHomeTeam(selectedTeam || null);
   };
 
   const handleAwayTeamChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedTeam = teams.find((team) => team.name === event.target.value);
+    const selectedTeam = clubOptions.find((team) => team.name === event.target.value);
     setAwayTeam(selectedTeam || null);
   };
 
@@ -70,7 +111,7 @@ const Page: React.FC = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ home_team: homeTeam?.name, away_team: awayTeam?.name, match_date: matchDate, kickoff_time: matchTime }),
-        signal: AbortSignal.timeout(10000),
+        signal: AbortSignal.timeout(30000),
       });
       const result = await response.json().catch(() => null);
       if (!response.ok) throw new Error(result?.error ?? 'The prediction service is unavailable. Check that Flask is running.');
@@ -102,14 +143,14 @@ const Page: React.FC = () => {
 
   const TeamSelector = ({ title, value, onChange, selectedTeamName }: { title: string, value: Team | null, onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void, selectedTeamName?: string }) => {
     const availableTeams = selectedTeamName
-      ? teams.filter(team => team.name !== selectedTeamName)
-      : teams;
+      ? clubOptions.filter(team => team.name !== selectedTeamName)
+      : clubOptions;
 
     return (
       <div className='flex flex-col items-center gap-8'>
         <h3 className='font-bold text-purple-950'>{title}</h3>
         <div className='w-40 h-40 flex items-center justify-center'>
-          {value ? <img src={value.logo} alt={`${value.name} crest`} className='w-full h-full object-contain'/> : <span className='text-sm text-gray-500'>Choose a club</span>}
+          {value?.logo ? <img src={value.logo} alt={`${value.name} crest`} className='w-full h-full object-contain'/> : <span className='text-sm text-gray-500'>{value?.name ?? 'Choose a club'}</span>}
         </div>
         <select
           className="w-full border border-gray-400 rounded px-3 py-2  text-black"
@@ -120,7 +161,7 @@ const Page: React.FC = () => {
           required
         >
           <option value="" className='text-slate-400'>Select a team</option>
-          {availableTeams.filter(team => !['Bournemouth', 'Nottingham Forest', 'Sunderland'].includes(team.name)).map((team) => (
+          {availableTeams.map((team) => (
             <option key={team.name} value={team.name}>
               {team.name}
             </option>
@@ -165,10 +206,10 @@ const Page: React.FC = () => {
           <input
             type="date"
             className="w-full border border-gray-400 rounded px-3 py-2  text-black"
-            onChange={event => setMatchDate(event.target.value)}
+            onChange={event => changeDate(event.target.value)}
             value={matchDate}
-            min="2022-01-02"
-            max="2022-04-25"
+            min={coverage?.min_date}
+            max={coverage?.max_date}
             aria-label="Match date"
             disabled={pending}
             required
@@ -177,7 +218,7 @@ const Page: React.FC = () => {
         <button
           type="submit"
           className="bg-purple-700 hover:bg-purple-900 text-white font-bold py-3 px-6 rounded text-lg disabled:bg-purple-400 disabled:hover:cursor-default hover:cursor-pointer"
-          disabled={pending || !homeTeam || !awayTeam || !matchTime || !matchDate}
+          disabled={pending || !coverage || !homeTeam || !awayTeam || !matchTime || !matchDate}
         >
           {pending ? 'Predicting…' : 'Predict match'}
         </button>
@@ -196,7 +237,9 @@ const Page: React.FC = () => {
       </div>
       <div className='flex flex-col items-center w-full'>
         <h2 className="text-purple-950 font-bold p-4 text-xl">Match Predictor</h2>
-        <p className="text-sm text-purple-950 mb-3 px-4 text-center">Historical predictions · January 2–April 25, 2022</p>
+        <p className="text-sm text-purple-950 mb-3 px-4 text-center">
+          {coverage ? `Match results through ${coverage.last_result} · ${coverage.source}` : 'Loading match coverage…'}
+        </p>
         <form
           onSubmit={handleSubmit}
           className="fixture-grid fixture-card mx-4">

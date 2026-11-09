@@ -10,7 +10,7 @@ The local interface reuses `frontend/src/app/page.tsx`, `ResultPage.tsx`, and th
 - Results screen with both clubs, home-win/draw/away-win estimates, fixture details, and Change fixture navigation that retains inputs.
 - JSON request to Flask through the Vite proxy, with error handling and no fallback to sample percentages.
 
-The original source used a random percentage, and an earlier restoration displayed fixed samples. The current interface displays only model estimates returned by Flask. The model uses historical data through April 2022; these are uncalibrated estimates, not live-season forecasts.
+The original source used a random percentage, and an earlier restoration displayed fixed samples. The current interface displays only model estimates returned by Flask. Run `python -m src.recent` and restart Flask to enable a refreshable results feed. The page displays the date of the last recorded result; estimates are uncalibrated and the app does not verify scheduled fixtures.
 
 ## Local adaptations
 
