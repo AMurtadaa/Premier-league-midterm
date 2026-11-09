@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ResultPage from './ResultPage';
+import ResultPage, { type Prediction } from './ResultPage';
 import { validateFixture } from '../fixture.mjs';
 
 interface Team {
@@ -32,12 +32,12 @@ const teams: Team[] = [
 
 
 const Page: React.FC = () => {
-  const [homeTeam, setHomeTeam] = useState<Team | null>(null);
-  const [awayTeam, setAwayTeam] = useState<Team | null>(null);
-  const [matchTime, setMatchTime] = useState('');
-  const [matchDay, setMatchDay] = useState('');
-  const [showResult, setShowResult] = useState(false);
-  const [homeWinPercentage, setHomeWinPercentage] = useState(0); // Add this for the result page
+  const [homeTeam, setHomeTeam] = useState<Team | null>(teams.find(team => team.name === 'Manchester City')!);
+  const [awayTeam, setAwayTeam] = useState<Team | null>(teams.find(team => team.name === 'Manchester United')!);
+  const [matchTime, setMatchTime] = useState('16:30');
+  const [matchDate, setMatchDate] = useState('2022-03-06');
+  const [prediction, setPrediction] = useState<Prediction | null>(null);
+  const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
 
   const handleHomeTeamChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -54,32 +54,46 @@ const Page: React.FC = () => {
     setMatchTime(event.target.value);
   };
 
-  const handleMatchDayChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setMatchDay(event.target.value);
-  };
-
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (pending) return;
+    const matchDay = new Date(matchDate + 'T00:00:00Z').toLocaleDateString('en-US', { weekday: 'long', timeZone: 'UTC' });
     const validationError = validateFixture(homeTeam?.name, awayTeam?.name, matchTime, matchDay);
     if (validationError) {
       setError(validationError);
       return;
     }
     setError('');
-    // Fixed display-only example. No estimator or prediction API is called.
-    setHomeWinPercentage(60);
-    setShowResult(true);
+    setPending(true);
+    try {
+      const response = await fetch('/api/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ home_team: homeTeam?.name, away_team: awayTeam?.name, match_date: matchDate, kickoff_time: matchTime }),
+        signal: AbortSignal.timeout(10000),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(result?.error ?? 'The prediction service is unavailable. Check that Flask is running.');
+      const values = ['home_win', 'draw', 'away_win'].map(key => result?.probabilities?.[key]);
+      if (!values.every(value => typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 1)
+          || Math.abs(values.reduce((a, b) => a + b, 0) - 1) > 0.0001) {
+        throw new Error('The prediction service returned an invalid response.');
+      }
+      setPrediction(result);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to reach the prediction service.');
+    } finally {
+      setPending(false);
+    }
   };
 
-  if (showResult) {
+  if (prediction) {
     return (
       <ResultPage
-        setShowResult={setShowResult}
+        onBack={() => setPrediction(null)}
         homeTeam={homeTeam?.name || ''}
         awayTeam={awayTeam?.name || ''}
-        matchTime={matchTime}
-        matchDay={matchDay}
-        homeWinPercentage={homeWinPercentage}
+        prediction={prediction}
         homeTeamLogo={homeTeam ? homeTeam.logo : ""}
         awayTeamLogo={awayTeam ? awayTeam.logo : ""}
       />
@@ -102,10 +116,11 @@ const Page: React.FC = () => {
           onChange={onChange}
           value={value?.name || ''}
           aria-label={title === 'HOME TEAM' ? 'Home team' : 'Away team'}
+          disabled={pending}
           required
         >
           <option value="" className='text-slate-400'>Select a team</option>
-          {availableTeams.map((team) => (
+          {availableTeams.filter(team => !['Bournemouth', 'Nottingham Forest', 'Sunderland'].includes(team.name)).map((team) => (
             <option key={team.name} value={team.name}>
               {team.name}
             </option>
@@ -136,6 +151,7 @@ const Page: React.FC = () => {
             onChange={handleMatchTimeChange}
             value={matchTime}
             aria-label="Match time"
+            disabled={pending}
             pattern="([01][0-9]|2[0-3]):[0-5][0-9]"
             title="Use a valid 24-hour time, such as 14:00"
             required
@@ -145,36 +161,25 @@ const Page: React.FC = () => {
               <option key={time} value={time} />
             ))}
           </datalist>
-          <h3 className="text-purple-950 font-bold">Match Day</h3>
-          <select
+          <h3 className="text-purple-950 font-bold">Match Date</h3>
+          <input
+            type="date"
             className="w-full border border-gray-400 rounded px-3 py-2  text-black"
-            onChange={handleMatchDayChange}
-            value={matchDay}
-            aria-label="Match day"
+            onChange={event => setMatchDate(event.target.value)}
+            value={matchDate}
+            min="2022-01-02"
+            max="2022-04-25"
+            aria-label="Match date"
+            disabled={pending}
             required
-          >
-            <option value="">Select a day</option>
-            {['Saturday',
-                'Sunday',
-                'Monday',
-                'Tuesday',
-                'Wednesday',
-                'Thursday',
-                'Friday',].map(
-              (day) => (
-                <option key={day} value={day}>
-                  {day}
-                </option>
-              )
-            )}
-          </select>
+          />
         </div>
         <button
           type="submit"
           className="bg-purple-700 hover:bg-purple-900 text-white font-bold py-3 px-6 rounded text-lg disabled:bg-purple-400 disabled:hover:cursor-default hover:cursor-pointer"
-          disabled={!homeTeam || !awayTeam || !matchTime || !matchDay}
+          disabled={pending || !homeTeam || !awayTeam || !matchTime || !matchDate}
         >
-          Preview results
+          {pending ? 'Predicting…' : 'Predict match'}
         </button>
       </div>
     )
@@ -191,7 +196,7 @@ const Page: React.FC = () => {
       </div>
       <div className='flex flex-col items-center w-full'>
         <h2 className="text-purple-950 font-bold p-4 text-xl">Match Predictor</h2>
-        <p className="text-sm text-purple-950 mb-3 px-4 text-center">Select your fixture to explore the results interface.</p>
+        <p className="text-sm text-purple-950 mb-3 px-4 text-center">Historical predictions · January 2–April 25, 2022</p>
         <form
           onSubmit={handleSubmit}
           className="fixture-grid fixture-card mx-4">
@@ -205,7 +210,6 @@ const Page: React.FC = () => {
           {TeamSelector({ title: 'AWAY TEAM', value: awayTeam, onChange: handleAwayTeamChange, selectedTeamName: homeTeam?.name })}
         </form>
         {error && <p role="alert" className="text-red-700 mt-4">{error}</p>}
-        <div className="demo-notice"><strong>Interface demo:</strong> The original selection and results pages are restored here. Results use fixed sample values to demonstrate the layout, not model predictions. A real prediction API is not connected.</div>
       </div>
 
     </div>

@@ -4,17 +4,17 @@ The local interface reuses `frontend/src/app/page.tsx`, `ResultPage.tsx`, and th
 
 ## Available flow
 
-- Purple header, club logos, separate home/away selectors, kickoff time, and weekday.
+- Purple header, club logos, separate home/away selectors, kickoff time, and historical fixture date.
 - Opponent filtering prevents selecting the same club twice.
 - Required controls and time-format validation.
-- Results screen with both clubs, a two-way display, match details, and Change fixture navigation that retains input values.
-- Expandable JSON input preview, with no request sent to a prediction service.
+- Results screen with both clubs, home-win/draw/away-win estimates, fixture details, and Change fixture navigation that retains inputs.
+- JSON request to Flask through the Vite proxy, with error handling and no fallback to sample percentages.
 
-The original source used a random percentage. This adaptation instead displays fixed 60/40 sample values with prominent **not a model prediction** labels. A draw probability is not inferred from the two-way example. Real H/D/A output and model integration remain incomplete.
+The original source used a random percentage, and an earlier restoration displayed fixed samples. The current interface displays only model estimates returned by Flask. The model uses historical data through April 2022; these are uncalibrated estimates, not live-season forecasts.
 
 ## Local adaptations
 
-The React/TypeScript components run under the existing Vite setup rather than copying the old Next.js runtime. Tailwind styles are retained. The input controls retain focus while typing; crest images have accessible labels, the sample bar has adjacent side-by-side segments, and the layout stacks on smaller screens. Pure validation/request functions have automated tests.
+The React/TypeScript components run under Vite, with Tailwind styles and accessible crest labels. Start Flask first from the repository root with `python -m src.api` after installing `requirements.txt`. Then run the frontend in a second terminal:
 
 ```powershell
 cd frontend
@@ -28,4 +28,4 @@ npm test
 npm run build
 ```
 
-These adaptations are maintenance of the existing frontend, not evidence of an earlier completion date. The report distinguishes the original Weeks 7-8 interface milestone from later API integration.
+This is a new working integration, not a recovery of the archived Flask service or evidence of an earlier completion date.

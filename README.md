@@ -6,7 +6,7 @@ The project explores how historical match data and recent team form can support 
 
 ## Current development
 
-The experimental pipeline currently predicts **a team's win versus non-win**. It includes chronological evaluation and previous-match rolling features. The next research stage is fixture-level three-class modeling, followed by calibration, controlled feature comparisons, and interpretation. The React frontend reuses the original club-selection and results components; a prediction service has not yet been connected.
+The archived experimental pipeline predicts a team's win versus non-win. A separate, newly rebuilt Flask service now serves fixture-level home-win, draw, and away-win estimates to React. Its fixed-setting Gradient Boosting model uses pre-match form from both clubs. It is uncalibrated and does not reproduce the earlier reported 75% result.
 
 | Component | Status |
 |---|---|
@@ -14,8 +14,9 @@ The experimental pipeline currently predicts **a team's win versus non-win**. It
 | Binary Random Forest baseline and lagged form experiment | Reconstructed from recorded notebook evidence; reproducible |
 | Rolling feature checks and chronological split details | Reproducibility verification included |
 | Logistic Regression / Random Forest / Gradient Boosting | Reported comparison plus a separately labeled supplemental experiment |
-| React interface | Original club selectors, crests, match controls, results layout, and return navigation; sample output clearly labeled |
-| Three-class fixture model, calibration, final test, interpretability | Planned / incomplete |
+| React interface | Calls Flask and displays all three model estimates |
+| Three-class fixture model | Fixed-setting Gradient Boosting; 510 training and 137 chronological holdout fixtures; 50.36% accuracy and 0.397 macro-F1 |
+| Calibration, independent final evaluation, interpretability | Not yet completed |
 
 ## Experimental results
 
@@ -58,7 +59,16 @@ jupyter lab
 
 Open `notebooks/01_data_and_features.ipynb` and `notebooks/02_binary_experiments.ipynb`. The original scraper is preserved under `notebooks/archive/`; reproducing the experiments does not require re-scraping the web.
 
-## Run the early interface
+## Run the historical predictor
+
+From the repository root, install Python dependencies and start Flask in one terminal:
+
+```sh
+python -m pip install -r requirements.txt
+python -m src.api
+```
+
+Flask trains the model from the bundled CSV on startup and listens on port 5000. In a second terminal, start React:
 
 Requires Node.js 22.12+:
 
@@ -68,7 +78,7 @@ npm ci
 npm run dev
 ```
 
-Select two different teams, a kickoff time and weekday, then choose **Preview results**. The results page shows club crests, match details, a two-way layout example, and expandable request fields. Its fixed 60/40 sample is not model output. **Change fixture** returns to the form with inputs retained. Real forecasts will be added after the prediction service is implemented and evaluated. Run `npm test` for input checks and `npm run build` for the production build. See [frontend implementation and source attribution](docs/FRONTEND.md).
+Choose **Predict match** for the prefilled Manchester derby, or choose another supported matchup and date from January 2 through April 25, 2022. React sends the teams, date, and kickoff time to `POST /api/predict` through the Vite proxy. The model was trained on home fixtures before January 1, 2022; the API only uses observations strictly before the requested date for rolling form. The three displayed estimates come from Flask, not fixed sample values. Dates outside the historical data window are rejected; this is not a live-season forecast. `GET /api/status` exposes chronological holdout metrics. See [frontend source attribution](docs/FRONTEND.md).
 
 ## Repository map
 
